@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/adambbolduc/uabot/server"
-	"github.com/erocheleau/uabot/scenariolib"
+	"github.com/coveo/uabot/scenariolib"
 	"io/ioutil"
 	"log"
 	"math/rand"

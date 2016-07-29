@@ -3,7 +3,7 @@ package server
 import (
 	"github.com/adambbolduc/uabot/autobot"
 	"github.com/adambbolduc/uabot/explorerlib"
-	"github.com/erocheleau/uabot/scenariolib"
+	"github.com/coveo/uabot/scenariolib"
 	"github.com/satori/go.uuid"
 	"math/rand"
 )
