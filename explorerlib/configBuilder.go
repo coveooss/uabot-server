@@ -68,11 +68,6 @@ func (builder *botConfigurationBuilder) NoWait() *botConfigurationBuilder {
 	return builder
 }
 
-func (builder *botConfigurationBuilder) WithOriginLevels(originLevel map[string][]string) *botConfigurationBuilder {
-	builder.config.OriginLevels = originLevel
-	return builder
-}
-
 func (builder *botConfigurationBuilder) Build() *scenariolib.Config {
 	return &scenariolib.Config{}
 }

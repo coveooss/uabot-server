@@ -76,12 +76,12 @@ func NewViewEvent() scenariolib.JSONEvent {
 	}
 }
 
-func NewRandomizeOriginEvent() scenariolib.JSONEvent {
+func NewSetOriginLevels(originLevel1 string, originLevel2 string) scenariolib.JSONEvent {
 	return scenariolib.JSONEvent{
 		Type: "SetOrigin",
 		Arguments: map[string]interface{}{
-			"randomizeOriginLevel1": true,
-			"randomizeOriginLevel2": true,
+			originLevel1: originLevel1,
+			originLevel2: originLevel2,
 		},
 	}
 }
