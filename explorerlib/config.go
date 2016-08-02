@@ -20,5 +20,5 @@ type Config struct {
 	MainScenario                   []*scenariolib.Scenario `json:"scenario"`
 	TimeToLive                     int                     `json:"timeToLive"`
 	OriginLevels                   map[string][]string     `json:"originLevels"`
-	Id 	uuid.UUID `json:"id"`
+	Id                             uuid.UUID               `json:"id"`
 }

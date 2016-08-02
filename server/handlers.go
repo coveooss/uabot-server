@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/adambbolduc/uabot/explorerlib"
+	"github.com/coveo/uabot-server/explorerlib"
 	"github.com/coveo/uabot/scenariolib"
 	"github.com/gorilla/mux"
 	"github.com/satori/go.uuid"
@@ -39,7 +39,6 @@ func Start(writter http.ResponseWriter, request *http.Request) {
 		http.Error(writter, err.Error(), http.StatusBadRequest)
 		return
 	}
-
 
 	timer := time.NewTimer(time.Duration(config.TimeToLive) * time.Minute)
 	quitChannel := make(chan bool)

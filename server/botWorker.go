@@ -1,8 +1,8 @@
 package server
 
 import (
-	"github.com/adambbolduc/uabot/autobot"
-	"github.com/adambbolduc/uabot/explorerlib"
+	"github.com/coveo/uabot-server/autobot"
+	"github.com/coveo/uabot-server/explorerlib"
 	"github.com/coveo/uabot/scenariolib"
 	"github.com/satori/go.uuid"
 	"math/rand"
