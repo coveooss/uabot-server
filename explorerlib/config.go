@@ -1,6 +1,9 @@
 package explorerlib
 
-import "github.com/coveo/uabot/scenariolib"
+import (
+	"github.com/coveo/uabot/scenariolib"
+	"github.com/satori/go.uuid"
+)
 
 type Config struct {
 	FetchNumberOfResults           int                     `json:"fetchQueryNumber"`
@@ -17,4 +20,5 @@ type Config struct {
 	MainScenario                   []*scenariolib.Scenario `json:"scenario"`
 	TimeToLive                     int                     `json:"timeToLive"`
 	OriginLevels                   map[string][]string     `json:"originLevels"`
+	Id 	uuid.UUID `json:"id"`
 }

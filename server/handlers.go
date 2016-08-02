@@ -32,13 +32,14 @@ func Start(writter http.ResponseWriter, request *http.Request) {
 		return
 	}
 
+	config.Id = uuid.NewV4()
+
 	err = validateConfig(config)
 	if err != nil {
 		http.Error(writter, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	id := uuid.NewV4()
 
 	timer := time.NewTimer(time.Duration(config.TimeToLive) * time.Minute)
 	quitChannel := make(chan bool)
@@ -47,14 +48,14 @@ func Start(writter http.ResponseWriter, request *http.Request) {
 		scenariolib.Info.Printf("Timer Timed Out")
 		close(quitChannel)
 	}()
-	quitChannels[id] = quitChannel
-	worker := NewWorker(config, quitChannel, random, id)
+	quitChannels[config.Id] = quitChannel
+	worker := NewWorker(config, quitChannel, random, config.Id)
 	err = workPool.PostWork(&worker)
 	if err != nil {
 		fmt.Printf("Error : %v\n", err)
 	}
 	json.NewEncoder(writter).Encode(map[string]interface{}{
-		"workerID": id,
+		"workerID": config.Id,
 	})
 }
 
@@ -99,7 +100,7 @@ func validateConfig(config *explorerlib.Config) error {
 		config.FieldsToExploreEqually = []string{"@syssource"}
 	}
 	if config.OutputFilePath == "" {
-		config.OutputFilePath = uuid.NewV4().String() + ".json"
+		config.OutputFilePath = config.Id.String() + ".json"
 	}
 	if config.Org == "" {
 

@@ -79,9 +79,9 @@ func (bot *Autobot) Run(quitChannel chan bool) error {
 		return err
 	}
 
-	scenariolib.Info.Println("Running Bot")
-
 	uabot := scenariolib.NewUabot(true, bot.config.OutputFilePath, bot.config.SearchToken, bot.config.AnalyticsToken, bot.random)
+
+	scenariolib.Info.Println("Running Bot")
 	err = uabot.Run(quitChannel)
 	return err
 }
