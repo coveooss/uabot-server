@@ -1,7 +1,7 @@
 FROM golang
 
 #get source code
-RUN git clone https://github.com/adambbolduc/uabot-server.git
+RUN git clone https://github.com/coveo/uabot-server.git
 WORKDIR /go/uabot-server/
 RUN go get -d
 
