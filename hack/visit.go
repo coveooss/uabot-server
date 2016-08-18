@@ -4,10 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"hash/fnv"
-	"io/ioutil"
 	"math"
 	"math/rand"
-	"os"
 	"strings"
 	"time"
 
