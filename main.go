@@ -17,7 +17,7 @@ import (
 var (
 	queueLength = flag.Int("queue-length", 100, "Length of the queue of workers")
 	port        = flag.String("port", "8080", "Server port")
-	routinePerCPU = flag.Int("routinePerCPU", 2, "Maximum number of routine per CPU")
+	routinePerCPU = flag.Int("routinesPerCPU", 2, "Maximum number of routine per CPU")
 )
 
 func main() {
