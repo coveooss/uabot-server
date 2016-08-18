@@ -51,7 +51,7 @@ func Start(writter http.ResponseWriter, request *http.Request) {
 	worker := NewWorker(config, quitChannel, random, config.Id)
 	err = workPool.PostWork(&worker)
 	if err != nil {
-		fmt.Printf("Error : %v\n", err)
+		scenariolib.Error.Printf("Error : %v\n", err)
 	}
 	json.NewEncoder(writter).Encode(map[string]interface{}{
 		"workerID": config.Id,
