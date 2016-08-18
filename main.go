@@ -18,7 +18,7 @@ var (
 	queueLength = flag.Int("queue-length", 100, "Length of the queue of workers")
 	port        = flag.String("port", "8080", "Server port")
 	routinesPerCPU = flag.Int("routinesPerCPU", 2, "Maximum number of routine per CPU")
-	silent = flag.Boolean("silent", false, "dump the Info prints")
+	silent = flag.Bool("silent", false, "dump the Info prints")
 )
 
 func main() {
