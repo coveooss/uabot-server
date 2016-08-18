@@ -17,7 +17,7 @@ import (
 var (
 	queueLength = flag.Int("queue-length", 100, "Length of the queue of workers")
 	port        = flag.String("port", "8080", "Server port")
-	routinePerCPU = flag.Int("routinesPerCPU", 2, "Maximum number of routine per CPU")
+	routinesPerCPU = flag.Int("routinesPerCPU", 2, "Maximum number of routine per CPU")
 )
 
 func main() {
@@ -31,7 +31,7 @@ func main() {
 	source := rand.NewSource(int64(time.Now().Unix()))
 	random := rand.New(source)
 
-	concurrentGoRoutine := *routinePerCPI * runtime.NumCPU()
+	concurrentGoRoutine := *routinesPerCPU * runtime.NumCPU()
 	scenariolib.Info.Printf("Number of workers: %v", concurrentGoRoutine)
 	workPool := server.NewWorkPool(concurrentGoRoutine, int32(*queueLength))
 
