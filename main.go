@@ -17,6 +17,7 @@ import (
 var (
 	queueLength = flag.Int("queue-length", 100, "Length of the queue of workers")
 	port        = flag.String("port", "8080", "Server port")
+	sslport        = flag.String("sslport", "443", "Server port")
 	routinesPerCPU = flag.Int("routinesPerCPU", 2, "Maximum number of routine per CPU")
 	silent = flag.Bool("silent", false, "dump the Info prints")
 )
@@ -32,6 +33,7 @@ func main() {
 
 	scenariolib.Info.Printf("Queue Length: %v", *queueLength)
 	scenariolib.Info.Printf("Server Port: %v", *port)
+	scenariolib.Info.Printf("Server SSL Port: %v", *sslport)
 
 	source := rand.NewSource(int64(time.Now().Unix()))
 	random := rand.New(source)
@@ -42,5 +44,6 @@ func main() {
 
 	server.Init(workPool, random)
 	router := server.NewRouter()
-	log.Fatal(http.ListenAndServeTLS(fmt.Sprintf(":%v", *port), "server.crt", "server.key", router))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", *port), router))
+	log.Fatal(http.ListenAndServeTLS(fmt.Sprintf(":%v", *sslport), "server.crt", "server.key", router))
 }
