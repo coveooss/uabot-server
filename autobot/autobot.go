@@ -29,16 +29,19 @@ func (bot *Autobot) Run(quitChannel chan bool) error {
 	if status != nil {
 		return status
 	}
+	scenariolib.Info.Println("words count by language")
 
 	languages, status := index.Client.ListFacetValues("@language", 1000)
 	if status != nil {
 		return status
 	}
+	scenariolib.Info.Println("language")
 
 	goodQueries, status := index.BuildGoodQueries(wordCountsByLanguage, bot.config.NumberOfQueryByLanguage, bot.config.AverageNumberOfWordsPerQuery)
 	if status != nil {
 		return status
 	}
+	scenariolib.Info.Println("good queries")
 
 	taggedLanguages := make([]string, 0)
 	scenarios := []*scenariolib.Scenario{}
@@ -48,6 +51,7 @@ func (bot *Autobot) Run(quitChannel chan bool) error {
 	for originLevel1, originLevels2 := range originLevels {
 		for _, originLevel2 := range originLevels2 {
 			for _, lang := range languages.Values {
+				scenariolib.Info.Println("begin building scenarios")
 				taggedLanguage := explorerlib.LanguageToTag(lang.Value)
 				taggedLanguages = append(taggedLanguages, taggedLanguage)
 				scenario := explorerlib.NewScenarioBuilder().WithName("1 search and click in " + lang.Value).WithWeight(lang.NumberOfResults).WithLanguage(taggedLanguage).WithEvent(explorerlib.NewSetOriginLevels(originLevel1, originLevel2)).WithEvent(explorerlib.NewSearchEvent(true)).WithEvent(explorerlib.NewClickEvent(0.5)).WithEvent(explorerlib.NewClickEvent(0.8)).Build()
@@ -70,6 +74,7 @@ func (bot *Autobot) Run(quitChannel chan bool) error {
 					viewScenarioBuilder.WithEvent(explorerlib.NewViewEvent())
 				}
 				scenarios = append(scenarios, viewScenarioBuilder.Build())
+				scenariolib.Info.Println("finished building scenarios")
 			}
 		}
 	}
@@ -78,6 +83,7 @@ func (bot *Autobot) Run(quitChannel chan bool) error {
 	if err != nil {
 		return err
 	}
+	scenariolib.Info.Println("bot configuration completed")
 
 	uabot := scenariolib.NewUabot(true, bot.config.OutputFilePath, bot.config.SearchToken, bot.config.AnalyticsToken, bot.random)
 
