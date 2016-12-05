@@ -3,6 +3,7 @@ package explorerlib
 import (
 	"github.com/coveo/go-coveo/search"
 	"math"
+	"fmt"
 )
 
 type Index struct {
@@ -45,9 +46,12 @@ func (index *Index) FetchResponse(queryExpression string, numberOfResults int) (
 
 func (index *Index) BuildGoodQueries(wordCountsByLanguage map[string]WordCounts, numberOfQueryByLanguage int, averageNumberOfWords int) (map[string][]string, error) {
 	queriesInLanguage := make(map[string][]string)
+
+	tic := 0
 	for language, wordCounts := range wordCountsByLanguage {
 		words := []string{}
 		for i := 0; i < numberOfQueryByLanguage; {
+			fmt.Printf("\rBuilding %v queries", tic)
 			word := wordCounts.PickExpNWords(averageNumberOfWords)
 			response, err := index.FetchResponse(word, 10)
 			if err != nil {
@@ -57,8 +61,11 @@ func (index *Index) BuildGoodQueries(wordCountsByLanguage map[string]WordCounts,
 				words = append(words, word)
 				i++
 			}
+			tic = tic +1
 		}
+
 		queriesInLanguage[language] = words
+
 	}
 	return queriesInLanguage, nil
 }
