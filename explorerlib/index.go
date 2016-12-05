@@ -67,5 +67,6 @@ func (index *Index) BuildGoodQueries(wordCountsByLanguage map[string]WordCounts,
 		queriesInLanguage[language] = words
 
 	}
+	fmt.Printf("\n")
 	return queriesInLanguage, nil
 }
