@@ -27,6 +27,8 @@ func (bot *Autobot) Run(quitChannel chan bool) error {
 		bot.config.FieldsToExploreEqually,
 		bot.config.DocumentsExplorationPercentage,
 		bot.config.FetchNumberOfResults)
+
+
 	if status != nil {
 		return status
 	}

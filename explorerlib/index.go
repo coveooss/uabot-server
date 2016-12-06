@@ -2,6 +2,7 @@ package explorerlib
 
 import (
 	"github.com/coveo/go-coveo/search"
+	"github.com/coveo/uabot/scenariolib"
 	"math"
 	"fmt"
 )
@@ -47,11 +48,11 @@ func (index *Index) FetchResponse(queryExpression string, numberOfResults int) (
 func (index *Index) BuildGoodQueries(wordCountsByLanguage map[string]WordCounts, numberOfQueryByLanguage int, averageNumberOfWords int) (map[string][]string, error) {
 	queriesInLanguage := make(map[string][]string)
 
-	tic := 0
+
+	scenariolib.Info.Print("Building queries and calling the index to validate that they return results")
 	for language, wordCounts := range wordCountsByLanguage {
 		words := []string{}
 		for i := 0; i < numberOfQueryByLanguage; {
-			fmt.Printf("\rBuilding %v queries", tic)
 			word := wordCounts.PickExpNWords(averageNumberOfWords)
 			response, err := index.FetchResponse(word, 10)
 			if err != nil {
@@ -60,10 +61,11 @@ func (index *Index) BuildGoodQueries(wordCountsByLanguage map[string]WordCounts,
 			if len(response.Results) > 0 {
 				words = append(words, word)
 				i++
+				fmt.Printf("\rBuilding and validating queries: %.0f %% completed", (float32(i)/float32(numberOfQueryByLanguage))*100)
 			}
-			tic = tic +1
 		}
-
+		fmt.Printf("\n")
+		scenariolib.Info.Println("Language : ", language," Total number of good queries : ", numberOfQueryByLanguage)
 		queriesInLanguage[language] = words
 
 	}
