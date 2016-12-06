@@ -2,6 +2,7 @@ package explorerlib
 
 import (
 	"github.com/coveo/go-coveo/search"
+	"github.com/coveo/uabot/scenariolib"
 )
 
 func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorationPercentage float64, fetchNumberOfResults int) (map[string]WordCounts, error) {
@@ -70,6 +71,7 @@ func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorati
 		}
 		RankByWordCount(wordCounts)
 		wordCountsByLanguage[language] = wordCounts
+		scenariolib.Info.Print("language : ",language, " : Total words count ", len(wordCounts.Words))
 	}
 	return wordCountsByLanguage, nil
 }

@@ -19,8 +19,9 @@ func NewAutobot(_config *explorerlib.Config, _random *rand.Rand) *Autobot {
 }
 
 func (bot *Autobot) Run(quitChannel chan bool) error {
+	scenariolib.Info.Print("Creating Index")
 	index, status := explorerlib.NewIndex(bot.config.SearchEndpoint, bot.config.SearchToken)
-
+	scenariolib.Info.Print("Determining Words count per language")
 	wordCountsByLanguage, status := explorerlib.FindWordsByLanguageInIndex(
 		index,
 		bot.config.FieldsToExploreEqually,
@@ -34,7 +35,7 @@ func (bot *Autobot) Run(quitChannel chan bool) error {
 	if status != nil {
 		return status
 	}
-
+	scenariolib.Info.Print("Creating Queries")
 	goodQueries, status := index.BuildGoodQueries(wordCountsByLanguage, bot.config.NumberOfQueryByLanguage, bot.config.AverageNumberOfWordsPerQuery)
 	if status != nil {
 		return status
@@ -45,6 +46,7 @@ func (bot *Autobot) Run(quitChannel chan bool) error {
 
 	originLevels := bot.config.OriginLevels
 
+	scenariolib.Info.Print("Creating scenarios")
 	for originLevel1, originLevels2 := range originLevels {
 		for _, originLevel2 := range originLevels2 {
 			for _, lang := range languages.Values {
