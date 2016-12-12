@@ -242,7 +242,16 @@ func (bot *Autobot) Run(quitChannel chan bool) error {
 		}
 	}
 
-	err := explorerlib.NewBotConfigurationBuilder().WithOrgName(bot.config.Org).WithSearchEndpoint(bot.config.SearchEndpoint).WithAnalyticsEndpoint(bot.config.AnalyticsEndpoint).AllAnonymous().WithLanguages(taggedLanguages).WithGoodQueryByLanguage(goodQueries).WithTimeBetweenActions(1).WithTimeBetweenVisits(5).WithScenarios(scenarios).NoWait().Save(bot.config.OutputFilePath)
+	err := explorerlib.NewBotConfigurationBuilder().
+		WithOrgName(bot.config.Org).
+		WithSearchEndpoint(bot.config.SearchEndpoint).
+		WithAnalyticsEndpoint(bot.config.AnalyticsEndpoint).AllAnonymous().
+		WithLanguages(taggedLanguages).WithGoodQueryByLanguage(goodQueries).
+		WithTimeBetweenActions(3).
+		WithTimeBetweenVisits(1).
+		WithConstantWaitTime(true).
+		WithScenarios(scenarios).
+		Save(bot.config.OutputFilePath)
 	if err != nil {
 		return err
 	}

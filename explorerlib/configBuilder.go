@@ -52,6 +52,11 @@ func (builder *botConfigurationBuilder) WithTimeBetweenVisits(time int) *botConf
 	return builder
 }
 
+func (builder *botConfigurationBuilder) WithConstantWaitTime(b bool) *botConfigurationBuilder {
+	builder.config.IsWaitConstant = b
+	return builder
+}
+
 func (builder *botConfigurationBuilder) WithGoodQueryByLanguage(goodQueriesByLanguage map[string][]string) *botConfigurationBuilder {
 	builder.config.GoodQueriesInLang = goodQueriesByLanguage
 	return builder
