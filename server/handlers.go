@@ -82,7 +82,8 @@ func validateConfig(config *explorerlib.Config) error {
 		return errors.New("analyticsToken Missing")
 	}
 	if config.TimeToLive <= 0 {
-		return errors.New("timeToLive Missing")
+		scenariolib.Warning.Print("TimeToLive should be greater of equal to 1, will be set to default value of 1" )
+		config.TimeToLive = 1
 	}
 	if config.AverageNumberOfWordsPerQuery < 1 || config.AverageNumberOfWordsPerQuery > 20 {
 		scenariolib.Warning.Print("AverageNumberOfWordsPerQuery out of bounds, will be set to default value of 1")
