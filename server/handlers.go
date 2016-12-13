@@ -36,6 +36,7 @@ func Start(writter http.ResponseWriter, request *http.Request) {
 
 	err = validateConfig(config)
 	if err != nil {
+		scenariolib.Error.Print(err.Error())
 		http.Error(writter, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -80,29 +81,35 @@ func validateConfig(config *explorerlib.Config) error {
 	if config.AnalyticsToken == "" {
 		return errors.New("analyticsToken Missing")
 	}
-	if config.TimeToLive == 0 {
+	if config.TimeToLive <= 0 {
 		return errors.New("timeToLive Missing")
 	}
-	if config.AverageNumberOfWordsPerQuery == 0 {
+	if config.AverageNumberOfWordsPerQuery < 1 || config.AverageNumberOfWordsPerQuery > 20 {
+		scenariolib.Warning.Print("AverageNumberOfWordsPerQuery out of bounds, will be set to default value of 1")
 		config.AverageNumberOfWordsPerQuery = 1
 	}
-	if config.DocumentsExplorationPercentage == 0 {
+	if config.DocumentsExplorationPercentage <= 0 || config.DocumentsExplorationPercentage > 1 {
+		scenariolib.Warning.Print("DocumentsExplorationPercentage out of bounds, will be set to default value of 0.01")
 		config.DocumentsExplorationPercentage = 0.01
 	}
-	if config.NumberOfQueryByLanguage == 0 {
+	if config.NumberOfQueryByLanguage < 0 || config.NumberOfQueryByLanguage > 200 {
+		scenariolib.Warning.Print("NumberOfQueryByLanguage out of bounds, will be set to default value of 10")
 		config.NumberOfQueryByLanguage = 10
 	}
-	if config.FetchNumberOfResults == 0 {
+	if config.FetchNumberOfResults < 0 || config.FetchNumberOfResults > 2000 {
+		scenariolib.Warning.Print("FetchNumberOfResults out of bounds, will be set to default value of 1000")
 		config.FetchNumberOfResults = 1000
 	}
 	if config.FieldsToExploreEqually == nil || len(config.FieldsToExploreEqually) == 0 {
+		scenariolib.Warning.Print("FieldsToExploreEqually out of bounds, will be set to default value of @syssource")
 		config.FieldsToExploreEqually = []string{"@syssource"}
 	}
 	if config.OutputFilePath == "" {
+		scenariolib.Warning.Print("OutputFilePath undefined, will be set to :", config.Id.String() + ".json" )
 		config.OutputFilePath = config.Id.String() + ".json"
 	}
 	if config.Org == "" {
-
+		return errors.New("Org Missing")
 	}
 	return nil
 }

@@ -30,11 +30,24 @@ func main() {
 		scenariolib.InitLogger(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr)
 	}
 
-	scenariolib.Info.Printf("Queue Length: %v", *queueLength)
-	scenariolib.Info.Printf("Server Port: %v", *port)
+
 
 	source := rand.NewSource(int64(time.Now().Unix()))
 	random := rand.New(source)
+
+	if *queueLength < 1 || *queueLength > 500 {
+		scenariolib.Info.Printf("Queue Length is out of bounds, should be in [1,500].  Set to default value")
+		*queueLength = 100
+	}
+
+	if *routinesPerCPU < 1 || *routinesPerCPU > 5 {
+		scenariolib.Info.Printf("Routine per CPU is out of bounds, should be in [1,5].  Set to default value")
+		*routinesPerCPU = 2
+	}
+
+	scenariolib.Info.Printf("Queue Length: %v", *queueLength)
+	scenariolib.Info.Printf("Server Port: %v", *port)
+	scenariolib.Info.Printf("Routine per CPU: %v", *routinesPerCPU)
 
 	concurrentGoRoutine := *routinesPerCPU * runtime.NumCPU()
 	scenariolib.Info.Printf("Number of workers: %v", concurrentGoRoutine)
