@@ -3,9 +3,16 @@ package explorerlib
 import (
 	"github.com/coveo/go-coveo/search"
 	"github.com/coveo/uabot/scenariolib"
+	"time"
+)
+
+var (
+	botnumber int = 0
 )
 
 func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorationPercentage float64, fetchNumberOfResults int) (map[string]WordCounts, error) {
+	botnumber ++
+	scenariolib.Info.Printf("Number of active bot : %v",botnumber)
 	wordCountsByLanguage := make(map[string]WordCounts)
 	wordsByFieldValueByLanguage := map[string][]WordsByFieldValue{}
 	languages, status := index.FetchLanguages()
@@ -24,6 +31,7 @@ func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorati
 			// for all values of the field
 			for _, value := range values.Values {
 				wordCounts := WordCounts{}
+				time.Sleep(200 * time.Millisecond)
 				totalCount, status := index.FindTotalCountFromQuery(search.Query{
 					AQ: "@syslanguage=\"" + language + "\" " + field + "=\"" + value.Value + "\"",
 				})
