@@ -65,7 +65,8 @@ func Start(writter http.ResponseWriter, request *http.Request) {
 	//Format the Config into a JSON for display purpose
 	out, err := json.MarshalIndent(config,"","	")
 	if err != nil {
-		panic (err)
+		http.Error(writter, err.Error(), http.StatusTeapot)
+		return
 	}
 	scenariolib.Info.Println("Current Configuration : \n" + string(out))
 
