@@ -20,7 +20,7 @@ func NewAutobot(_config *explorerlib.Config, _random *rand.Rand) *Autobot {
 }
 
 const (
-	MINIMUMINDEXCALLTIME time.Duration = 200 //Milliseconds
+	MINIMUMINDEXCALLTIME time.Duration = 200 //Base value to throttle down Index queries in Milliseconds
 )
 
 func (bot *Autobot) Run(quitChannel chan bool) error {
