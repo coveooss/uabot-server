@@ -111,27 +111,27 @@ func validateConfig(config *explorerlib.Config) error {
 		return errors.New("analyticsToken Missing")
 	}
 	if config.TimeToLive < MINIMUMTIMETOLIVE || config.TimeToLive > MAXIMUMTIMETOLIVE {
-		scenariolib.Warning.Print("TimeToLive is out of bounds, should be in [%v,%v], will use default value of %v ",MINIMUMTIMETOLIVE,MAXIMUMTIMETOLIVE,DEFAULTIMETOLIVE)
+		scenariolib.Warning.Printf("TimeToLive is out of bounds, should be in [%v,%v], will use default value of %v ",MINIMUMTIMETOLIVE,MAXIMUMTIMETOLIVE,DEFAULTIMETOLIVE)
 		config.TimeToLive = DEFAULTIMETOLIVE
 	}
 	if config.AverageNumberOfWordsPerQuery < MINIMUMNUMBERWORDSPERQUERY || config.AverageNumberOfWordsPerQuery > MAXIMUMNUMBERWORDSPERQUERY {
-		scenariolib.Warning.Print("AverageNumberOfWordsPerQuery is out of bounds, should be in [%v,%v], will use default value of %v ",MINIMUMNUMBERWORDSPERQUERY,MAXIMUMNUMBERWORDSPERQUERY,DEFAULTNUMBERWORDSPERQUERY)
+		scenariolib.Warning.Printf("AverageNumberOfWordsPerQuery is out of bounds, should be in [%v,%v], will use default value of %v ",MINIMUMNUMBERWORDSPERQUERY,MAXIMUMNUMBERWORDSPERQUERY,DEFAULTNUMBERWORDSPERQUERY)
 		config.AverageNumberOfWordsPerQuery = DEFAULTNUMBERWORDSPERQUERY
 	}
 	if config.DocumentsExplorationPercentage < MINIMUMDOCUMENTEXPLORATIONPERCENT || config.DocumentsExplorationPercentage > MAXIMUMDOCUMENTEXPLORATIONPERCENT {
-		scenariolib.Warning.Print("DocumentsExplorationPercentage is out of bounds, should be in [0%,100%], will use default value of %f %%",DEFAULTDOCUMENTEXPLORATIONPERCENT * 100)
+		scenariolib.Warning.Printf("DocumentsExplorationPercentage is out of bounds, should be in [0%,100%], will use default value of %f %%",DEFAULTDOCUMENTEXPLORATIONPERCENT * 100)
 		config.DocumentsExplorationPercentage = DEFAULTDOCUMENTEXPLORATIONPERCENT
 	}
 	if config.NumberOfQueryByLanguage < MINIMUMNUMBEROFQUERYPERLANGUAGE || config.NumberOfQueryByLanguage > MAXIMUMNUMBEROFQUERYPERLANGUAGE {
-		scenariolib.Warning.Print("NumberOfQueryByLanguage is out of bounds, should be in [%v,%v], will use default value of %v ",MINIMUMNUMBEROFQUERYPERLANGUAGE,MAXIMUMNUMBEROFQUERYPERLANGUAGE,DEFAULTNUMBEROFQUERYPERLANGUAGE)
+		scenariolib.Warning.Printf("NumberOfQueryByLanguage is out of bounds, should be in [%v,%v], will use default value of %v ",MINIMUMNUMBEROFQUERYPERLANGUAGE,MAXIMUMNUMBEROFQUERYPERLANGUAGE,DEFAULTNUMBEROFQUERYPERLANGUAGE)
 		config.NumberOfQueryByLanguage = DEFAULTNUMBEROFQUERYPERLANGUAGE
 	}
 	if config.FetchNumberOfResults < MINIMUMFETCHNUMBEROFRESULTS || config.FetchNumberOfResults > MAXIMUMFETCHNUMBEROFRESULTS {
-		scenariolib.Warning.Print("FetchNumberOfResults is out of bounds, should be in [%v,%v], will use default value of %v ",MINIMUMFETCHNUMBEROFRESULTS,MAXIMUMFETCHNUMBEROFRESULTS,DEFAULTFETCHNUMBEROFRESULTS)
+		scenariolib.Warning.Printf("FetchNumberOfResults is out of bounds, should be in [%v,%v], will use default value of %v ",MINIMUMFETCHNUMBEROFRESULTS,MAXIMUMFETCHNUMBEROFRESULTS,DEFAULTFETCHNUMBEROFRESULTS)
 		config.FetchNumberOfResults = DEFAULTFETCHNUMBEROFRESULTS
 	}
 	if config.FieldsToExploreEqually == nil || len(config.FieldsToExploreEqually) == 0 {
-		scenariolib.Warning.Print("FieldsToExploreEqually out of bounds, will be set to default value of @syssource")
+		scenariolib.Warning.Printf("FieldsToExploreEqually out of bounds, will be set to default value of @syssource")
 		config.FieldsToExploreEqually = []string{"@syssource"}
 	}
 	if config.OutputFilePath == "" {
