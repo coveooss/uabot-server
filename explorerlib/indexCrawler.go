@@ -6,13 +6,13 @@ import (
 	"time"
 )
 
-var (
-	botnumber int = 0
-)
+func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorationPercentage float64, fetchNumberOfResults int, minTime time.Duration ) (map[string]WordCounts, error) {
 
-func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorationPercentage float64, fetchNumberOfResults int) (map[string]WordCounts, error) {
-	botnumber ++
-	scenariolib.Info.Printf("Number of active bot : %v",botnumber)
+	numberOfActiveBot++
+	throttle = (minTime * time.Millisecond ) * time.Duration(numberOfActiveBot)
+	scenariolib.Info.Printf("Throttled at : %v",throttle)
+
+	scenariolib.Info.Printf("Number of active bot : %v",numberOfActiveBot)
 	wordCountsByLanguage := make(map[string]WordCounts)
 	wordsByFieldValueByLanguage := map[string][]WordsByFieldValue{}
 	languages, status := index.FetchLanguages()
@@ -30,14 +30,21 @@ func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorati
 			}
 			// for all values of the field
 			for _, value := range values.Values {
+
 				wordCounts := WordCounts{}
-				time.Sleep(200 * time.Millisecond)
+
+				t1 = time.Now()
+				if dt < throttle{
+					time.Sleep(throttle - dt)
+				}
 				totalCount, status := index.FindTotalCountFromQuery(search.Query{
 					AQ: "@syslanguage=\"" + language + "\" " + field + "=\"" + value.Value + "\"",
 				})
 				if status != nil {
 					return nil, status
 				}
+				dt = time.Since(t1)
+
 				var queryNumber int
 				if tempQueryNumber := (int(float64(totalCount)*documentsExplorationPercentage) / fetchNumberOfResults); tempQueryNumber > 0 {
 					queryNumber = tempQueryNumber
@@ -47,14 +54,21 @@ func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorati
 				randomWord := ""
 
 				for i := 0; i < queryNumber; i++ {
+
 					// build A query from the word counts in the appropriate language with a filter on the field value
 					queryExpression := randomWord +
 						" @syslanguage=\"" + language + "\" " +
 						field + "=\"" + value.Value + "\" "
+
+					t1 = time.Now()
+					if dt < throttle{
+						time.Sleep(throttle - dt)
+					}
 					response, status := index.FetchResponse(queryExpression, fetchNumberOfResults)
 					if status != nil {
 						return nil, status
 					}
+					dt = time.Since(t1)
 					// extract words from the response
 					newWordCounts := ExtractWordsFromResponse(*response)
 					// update word counts
@@ -81,5 +95,6 @@ func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorati
 		wordCountsByLanguage[language] = wordCounts
 		scenariolib.Info.Print("language : ",language, " : Total words count ", len(wordCounts.Words))
 	}
+	numberOfActiveBot--
 	return wordCountsByLanguage, nil
 }
