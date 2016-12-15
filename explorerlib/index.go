@@ -14,7 +14,9 @@ type Index struct {
 
 var (
 	t1 time.Time
-	dt time.Duration
+	t2 time.Time
+	dt1 time.Duration
+	dt2 time.Duration
 	numberOfActiveBot int = 0
 	throttle time.Duration
 )
@@ -68,12 +70,12 @@ func (index *Index) BuildGoodQueries(wordCountsByLanguage map[string]WordCounts,
 		for i := 0; i < numberOfQueryByLanguage; {
 			word := wordCounts.PickExpNWords(averageNumberOfWords)
 
-			t1 = time.Now()
-			if dt < throttle{
-				time.Sleep(throttle - dt)
+			t2 = time.Now()
+			if dt2 < throttle{
+				time.Sleep(throttle - dt2)
 			}
 			response, err := index.FetchResponse(word, 10)
-			dt = time.Since(t1)
+			dt2 = time.Since(t2)
 
 			if err != nil {
 				return nil, err
