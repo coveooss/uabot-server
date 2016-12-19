@@ -46,7 +46,8 @@ func (bot *Autobot) Run(quitChannel chan bool) error {
 		wordCountsByLanguage,
 		bot.config.NumberOfQueryByLanguage,
 		bot.config.AverageNumberOfWordsPerQuery,
-		MINIMUMINDEXCALLTIME)
+		MINIMUMINDEXCALLTIME,
+		bot.config.Id)
 	if status != nil {
 		return status
 	}

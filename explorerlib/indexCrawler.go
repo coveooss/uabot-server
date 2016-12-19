@@ -28,22 +28,25 @@ func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorati
 			if status != nil {
 				return nil, status
 			}
+			t1 = time.Now()
 			// for all values of the field
 			for _, value := range values.Values {
 
 				wordCounts := WordCounts{}
 
-				t1 = time.Now()
+				dt1 = time.Since(t1)
 				if dt1 < throttle{
 					time.Sleep(throttle - dt1)
 				}
+				t1 = time.Now()
+
 				totalCount, status := index.FindTotalCountFromQuery(search.Query{
 					AQ: "@syslanguage=\"" + language + "\" " + field + "=\"" + value.Value + "\"",
 				})
 				if status != nil {
 					return nil, status
 				}
-				dt1 = time.Since(t1)
+
 
 				var queryNumber int
 				if tempQueryNumber := (int(float64(totalCount)*documentsExplorationPercentage) / fetchNumberOfResults); tempQueryNumber > 0 {
@@ -53,6 +56,7 @@ func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorati
 				}
 				randomWord := ""
 
+				t3 = time.Now()
 				for i := 0; i < queryNumber; i++ {
 
 					// build A query from the word counts in the appropriate language with a filter on the field value
@@ -60,15 +64,16 @@ func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorati
 						" @syslanguage=\"" + language + "\" " +
 						field + "=\"" + value.Value + "\" "
 
-					t1 = time.Now()
-					if dt1 < throttle{
-						time.Sleep(throttle - dt1)
+					dt3 = time.Since(t3)
+					if dt3 < throttle{
+						time.Sleep(throttle - dt3)
 					}
+					t3 = time.Now()
 					response, status := index.FetchResponse(queryExpression, fetchNumberOfResults)
 					if status != nil {
 						return nil, status
 					}
-					dt1 = time.Since(t1)
+
 					// extract words from the response
 					newWordCounts := ExtractWordsFromResponse(*response)
 					// update word counts

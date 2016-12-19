@@ -6,6 +6,7 @@ import (
 	"math"
 	"fmt"
 	"time"
+	"github.com/satori/go.uuid"
 )
 
 type Index struct {
@@ -15,8 +16,10 @@ type Index struct {
 var (
 	t1 time.Time
 	t2 time.Time
+	t3 time.Time
 	dt1 time.Duration
 	dt2 time.Duration
+	dt3 time.Duration
 	numberOfActiveBot int = 0
 	throttle time.Duration
 )
@@ -55,27 +58,28 @@ func (index *Index) FetchResponse(queryExpression string, numberOfResults int) (
 	})
 }
 
-func (index *Index) BuildGoodQueries(wordCountsByLanguage map[string]WordCounts, numberOfQueryByLanguage int, averageNumberOfWords int, minTime time.Duration) (map[string][]string, error) {
+func (index *Index) BuildGoodQueries(wordCountsByLanguage map[string]WordCounts, numberOfQueryByLanguage int, averageNumberOfWords int, minTime time.Duration, botId  uuid.UUID ) (map[string][]string, error) {
 
 	numberOfActiveBot++
 	throttle = (minTime * time.Millisecond ) * time.Duration(numberOfActiveBot)
 	scenariolib.Info.Printf("Throttled at : %v",throttle)
 
 	queriesInLanguage := make(map[string][]string)
-	scenariolib.Info.Print("Building queries and calling the index to validate that they return results \n")
+	scenariolib.Info.Println("Building queries and calling the index to validate that they return results")
 
 	for language, wordCounts := range wordCountsByLanguage {
 		words := []string{}
 
+		t2 = time.Now()
 		for i := 0; i < numberOfQueryByLanguage; {
 			word := wordCounts.PickExpNWords(averageNumberOfWords)
 
-			t2 = time.Now()
+			dt2 = time.Since(t2)
 			if dt2 < throttle{
 				time.Sleep(throttle - dt2)
 			}
+			t2 = time.Now()
 			response, err := index.FetchResponse(word, 10)
-			dt2 = time.Since(t2)
 
 			if err != nil {
 				return nil, err
@@ -85,7 +89,7 @@ func (index *Index) BuildGoodQueries(wordCountsByLanguage map[string]WordCounts,
 			if len(response.Results) > 0 {
 				words = append(words, word)
 				i++
-				fmt.Printf("\rBuilding and validating queries: %.0f %% completed for language %s", (float32(i)/float32(numberOfQueryByLanguage))*100, language)
+				fmt.Printf("\rBot %v : Building and validating queries: %.0f %% completed for language %s",botId, (float32(i)/float32(numberOfQueryByLanguage))*100, language)
 			}
 		}
 		fmt.Printf("\n")
