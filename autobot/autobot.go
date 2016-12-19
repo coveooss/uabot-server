@@ -4,6 +4,7 @@ import (
 	"github.com/coveo/uabot-server/explorerlib"
 	"github.com/coveo/uabot/scenariolib"
 	"math/rand"
+	"time"
 )
 
 type Autobot struct {
@@ -18,6 +19,10 @@ func NewAutobot(_config *explorerlib.Config, _random *rand.Rand) *Autobot {
 	}
 }
 
+const (
+	MINIMUMINDEXCALLTIME time.Duration = 200 //Base value to throttle down Index queries in Milliseconds
+)
+
 func (bot *Autobot) Run(quitChannel chan bool) error {
 	scenariolib.Info.Print("Creating Index")
 	index, status := explorerlib.NewIndex(bot.config.SearchEndpoint, bot.config.SearchToken)
@@ -26,7 +31,8 @@ func (bot *Autobot) Run(quitChannel chan bool) error {
 		index,
 		bot.config.FieldsToExploreEqually,
 		bot.config.DocumentsExplorationPercentage,
-		bot.config.FetchNumberOfResults)
+		bot.config.FetchNumberOfResults,
+		MINIMUMINDEXCALLTIME)
 	if status != nil {
 		return status
 	}
@@ -36,7 +42,12 @@ func (bot *Autobot) Run(quitChannel chan bool) error {
 		return status
 	}
 	scenariolib.Info.Print("Creating Queries")
-	goodQueries, status := index.BuildGoodQueries(wordCountsByLanguage, bot.config.NumberOfQueryByLanguage, bot.config.AverageNumberOfWordsPerQuery)
+	goodQueries, status := index.BuildGoodQueries(
+		wordCountsByLanguage,
+		bot.config.NumberOfQueryByLanguage,
+		bot.config.AverageNumberOfWordsPerQuery,
+		MINIMUMINDEXCALLTIME,
+		bot.config.Id)
 	if status != nil {
 		return status
 	}
@@ -247,7 +258,7 @@ func (bot *Autobot) Run(quitChannel chan bool) error {
 		WithSearchEndpoint(bot.config.SearchEndpoint).
 		WithAnalyticsEndpoint(bot.config.AnalyticsEndpoint).AllAnonymous().
 		WithLanguages(taggedLanguages).WithGoodQueryByLanguage(goodQueries).
-		WithTimeBetweenActions(3).
+		WithTimeBetweenActions(1).
 		WithTimeBetweenVisits(1).
 		WithConstantWaitTime(true).
 		WithScenarios(scenarios).

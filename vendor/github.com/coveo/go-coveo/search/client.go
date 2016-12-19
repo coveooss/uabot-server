@@ -65,7 +65,6 @@ func (c *client) Query(q Query) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	req.Header.Add("Authorization", "Bearer "+c.token)
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accepts", "application/json")

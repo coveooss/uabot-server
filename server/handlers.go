@@ -135,7 +135,7 @@ func validateConfig(config *explorerlib.Config) error {
 		config.FieldsToExploreEqually = []string{"@syssource"}
 	}
 	if config.OutputFilePath == "" {
-		scenariolib.Warning.Print("OutputFilePath undefined, will be set to ", config.Id.String()+".json")
+		scenariolib.Warning.Printf("OutputFilePath undefined, will be set to %s.json", config.Id.String())
 		config.OutputFilePath = config.Id.String() + ".json"
 	}
 	if config.Org == "" {
