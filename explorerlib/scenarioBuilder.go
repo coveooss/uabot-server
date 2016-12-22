@@ -80,8 +80,8 @@ func NewSetOriginLevels(originLevel1 string, originLevel2 string) scenariolib.JS
 	return scenariolib.JSONEvent{
 		Type: "SetOrigin",
 		Arguments: map[string]interface{}{
-			originLevel1: originLevel1,
-			originLevel2: originLevel2,
+			"originLevel1": originLevel1,
+			"originLevel2": originLevel2,
 		},
 	}
 }
