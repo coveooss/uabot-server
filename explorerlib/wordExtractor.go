@@ -20,7 +20,14 @@ func ExtractWordCountsFromTitlesInResponse(response search.Response) WordCounts 
 	}
 	text = CleanText(text)
 	reg, _ := regexp.Compile("([\\w\\p{L}\\p{Nd}']+)")
-	words := reg.FindAllString(text, -1)
+
+	words := []string{}
+	for _, word := range reg.FindAllString(text, -1) {
+		if len(word) > 2 {
+			words = append(words, word)
+		}
+	}
+
 	results := CountWordOccurence(words)
 	return results
 }
@@ -29,7 +36,10 @@ func ExtractWordCountsFromConceptsInResponse(response search.Response) WordCount
 	conceptsList := WordCounts{}
 	for _, groupBy := range response.GroupByResults {
 		for _, concepts := range groupBy.Values {
-			conceptsList = conceptsList.Add(WordCount{CleanText(concepts.Value), concepts.NumberOfResults})
+			cleanValue := CleanText(concepts.Value)
+			if len(cleanValue) > 2 {
+				conceptsList = conceptsList.Add(WordCount{cleanValue, concepts.NumberOfResults})
+			}
 		}
 	}
 	return conceptsList

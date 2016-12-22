@@ -15,10 +15,10 @@ import (
 )
 
 var (
-	queueLength = flag.Int("queue-length", 100, "Length of the queue of workers")
-	port = flag.String("port", "8080", "Server port")
+	queueLength    = flag.Int("queue-length", 100, "Length of the queue of workers")
+	port           = flag.String("port", "8080", "Server port")
 	routinesPerCPU = flag.Int("routinesPerCPU", 2, "Maximum number of routine per CPU")
-	silent = flag.Bool("silent", false, "dump the Info prints")
+	silent         = flag.Bool("silent", false, "dump the Info prints")
 )
 
 const (
@@ -44,12 +44,12 @@ func main() {
 	random := rand.New(source)
 
 	if *queueLength < MINIMUMQUEUELENGTH || *queueLength > MAXIMUMQUEUELENGTH {
-		scenariolib.Info.Printf("Queue Length is out of bounds, should be in [%v,%v], will use default value of %v ",MINIMUMQUEUELENGTH,MAXIMUMQUEUELENGTH,DEFAULTQUEUELENGTH)
+		scenariolib.Info.Printf("Queue Length is out of bounds, should be in [%v,%v], will use default value of %v ", MINIMUMQUEUELENGTH, MAXIMUMQUEUELENGTH, DEFAULTQUEUELENGTH)
 		*queueLength = DEFAULTQUEUELENGTH
 	}
 
 	if *routinesPerCPU < MINIMUMROUTINEPERCPU || *routinesPerCPU > MAXIMUMROUTINEPERCPU {
-		scenariolib.Info.Printf("Routine per CPU is out of bounds, should be in [%v,%v], will use default value of %v ",MINIMUMROUTINEPERCPU,MAXIMUMROUTINEPERCPU,DEFAULTROUTINEPERCPU)
+		scenariolib.Info.Printf("Routine per CPU is out of bounds, should be in [%v,%v], will use default value of %v ", MINIMUMROUTINEPERCPU, MAXIMUMROUTINEPERCPU, DEFAULTROUTINEPERCPU)
 		*routinesPerCPU = DEFAULTROUTINEPERCPU
 	}
 

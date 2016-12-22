@@ -1,12 +1,13 @@
 package explorerlib
 
 import (
+	"fmt"
 	"github.com/coveo/go-coveo/search"
 	"github.com/coveo/uabot/scenariolib"
-	"math"
-	"fmt"
-	"time"
+	"github.com/jmcvetta/randutil"
 	"github.com/satori/go.uuid"
+	"math"
+	"time"
 )
 
 type Index struct {
@@ -14,14 +15,14 @@ type Index struct {
 }
 
 var (
-	t1 time.Time
-	t2 time.Time
-	t3 time.Time
-	dt1 time.Duration
-	dt2 time.Duration
-	dt3 time.Duration
+	t1                time.Time
+	t2                time.Time
+	t3                time.Time
+	dt1               time.Duration
+	dt2               time.Duration
+	dt3               time.Duration
 	numberOfActiveBot int = 0
-	throttle time.Duration
+	throttle          time.Duration
 )
 
 func NewIndex(endpoint string, searchToken string) (Index, error) {
@@ -58,11 +59,11 @@ func (index *Index) FetchResponse(queryExpression string, numberOfResults int) (
 	})
 }
 
-func (index *Index) BuildGoodQueries(wordCountsByLanguage map[string]WordCounts, numberOfQueryByLanguage int, averageNumberOfWords int, minTime time.Duration, botId  uuid.UUID ) (map[string][]string, error) {
+func (index *Index) BuildGoodQueries(wordCountsByLanguage map[string]WordCounts, numberOfQueryByLanguage int, averageNumberOfWords int, minTime time.Duration, botId uuid.UUID) (map[string][]string, error) {
 
 	numberOfActiveBot++
-	throttle = (minTime * time.Millisecond ) * time.Duration(numberOfActiveBot)
-	scenariolib.Info.Printf("Throttled at : %v",throttle)
+	throttle = (minTime * time.Millisecond) * time.Duration(numberOfActiveBot)
+	scenariolib.Info.Printf("Throttled at : %v", throttle)
 
 	queriesInLanguage := make(map[string][]string)
 	scenariolib.Info.Println("Building queries and calling the index to validate that they return results")
@@ -70,12 +71,17 @@ func (index *Index) BuildGoodQueries(wordCountsByLanguage map[string]WordCounts,
 	for language, wordCounts := range wordCountsByLanguage {
 		words := []string{}
 
+		choices := make([]randutil.Choice, 0, wordCounts.TotalCount)
+		for _, wordCount := range wordCounts.Words {
+			choices = append(choices, randutil.Choice{wordCount.Count, wordCount.Word})
+		}
+
 		t2 = time.Now()
 		for i := 0; i < numberOfQueryByLanguage; {
-			word := wordCounts.PickExpNWords(averageNumberOfWords)
+			word := wordCounts.PickExpNWordsWeighted(choices, averageNumberOfWords)
 
 			dt2 = time.Since(t2)
-			if dt2 < throttle{
+			if dt2 < throttle {
 				time.Sleep(throttle - dt2)
 			}
 			t2 = time.Now()
@@ -86,14 +92,14 @@ func (index *Index) BuildGoodQueries(wordCountsByLanguage map[string]WordCounts,
 			}
 
 			//todo fix this display fonction when multiple bot are working
-			if len(response.Results) > 0 {
+			if len(response.Results) > 0 && !contains(words, word) {
 				words = append(words, word)
 				i++
-				fmt.Printf("\rBot %v : Building and validating queries: %.0f %% completed for language %s",botId, (float32(i)/float32(numberOfQueryByLanguage))*100, language)
+				fmt.Printf("\rBot %v : Building and validating queries: %.0f %% completed for language %s", botId, (float32(i)/float32(numberOfQueryByLanguage))*100, language)
 			}
 		}
 		fmt.Printf("\n")
-		scenariolib.Info.Println("Language ", language," : Total number of good queries : ", len(words))
+		scenariolib.Info.Printf("Total number of good queries in %v: %v", language, len(words))
 		queriesInLanguage[language] = words
 
 	}

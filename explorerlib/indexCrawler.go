@@ -6,13 +6,13 @@ import (
 	"time"
 )
 
-func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorationPercentage float64, fetchNumberOfResults int, minTime time.Duration ) (map[string]WordCounts, error) {
+func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorationPercentage float64, fetchNumberOfResults int, minTime time.Duration) (map[string]WordCounts, error) {
 
 	numberOfActiveBot++
-	throttle = (minTime * time.Millisecond ) * time.Duration(numberOfActiveBot)
-	scenariolib.Info.Printf("Throttled at : %v",throttle)
+	throttle = (minTime * time.Millisecond) * time.Duration(numberOfActiveBot)
+	scenariolib.Info.Printf("Throttled at : %v", throttle)
 
-	scenariolib.Info.Printf("Number of active bot : %v",numberOfActiveBot)
+	scenariolib.Info.Printf("Number of active bot : %v", numberOfActiveBot)
 	wordCountsByLanguage := make(map[string]WordCounts)
 	wordsByFieldValueByLanguage := map[string][]WordsByFieldValue{}
 	languages, status := index.FetchLanguages()
@@ -35,7 +35,7 @@ func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorati
 				wordCounts := WordCounts{}
 
 				dt1 = time.Since(t1)
-				if dt1 < throttle{
+				if dt1 < throttle {
 					time.Sleep(throttle - dt1)
 				}
 				t1 = time.Now()
@@ -46,7 +46,6 @@ func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorati
 				if status != nil {
 					return nil, status
 				}
-
 
 				var queryNumber int
 				if tempQueryNumber := (int(float64(totalCount)*documentsExplorationPercentage) / fetchNumberOfResults); tempQueryNumber > 0 {
@@ -65,7 +64,7 @@ func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorati
 						field + "=\"" + value.Value + "\" "
 
 					dt3 = time.Since(t3)
-					if dt3 < throttle{
+					if dt3 < throttle {
 						time.Sleep(throttle - dt3)
 					}
 					t3 = time.Now()
@@ -98,7 +97,7 @@ func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorati
 		}
 		RankByWordCount(wordCounts)
 		wordCountsByLanguage[language] = wordCounts
-		scenariolib.Info.Print("language : ",language, " : Total words count ", len(wordCounts.Words))
+		scenariolib.Info.Print("language : ", language, " : Total words count ", len(wordCounts.Words))
 	}
 	numberOfActiveBot--
 	return wordCountsByLanguage, nil
