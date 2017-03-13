@@ -124,7 +124,7 @@ func (wordCounts WordCounts) PickExpNWordsWeighted(choices []randutil.Choice, n 
 	words := make([]string, 0)
 	for i := 0; i < numberOfWords; i++ {
 		word := wordCounts.PickRandomWordWeighted(choices)
-		if !contains(word, words) {
+		if !contains(words, word) {
 			words = append(words, word)
 		}
 	}
