@@ -256,7 +256,7 @@ func (bot *Autobot) Run(quitChannel chan bool) error {
 	err := explorerlib.NewBotConfigurationBuilder().
 		WithOrgName(bot.config.Org).
 		WithSearchEndpoint(bot.config.SearchEndpoint).
-		WithAnalyticsEndpoint(bot.config.AnalyticsEndpoint).AllAnonymous().
+		WithAnalyticsEndpoint(bot.config.AnalyticsEndpoint).
 		WithLanguages(taggedLanguages).WithGoodQueryByLanguage(goodQueries).
 		WithTimeBetweenActions(1).
 		WithTimeBetweenVisits(1).
