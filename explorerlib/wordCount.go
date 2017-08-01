@@ -1,6 +1,8 @@
 package explorerlib
 
 import (
+	"fmt"
+	"github.com/jmcvetta/randutil"
 	"math"
 	"math/rand"
 	"strings"
@@ -107,4 +109,24 @@ func randomNumberWithExpMinMax(min int, max int, lambda float64) int {
 		exponentialrandomint = int(random.ExpFloat64()*lambda + 0.5)
 	}
 	return exponentialrandomint
+}
+
+func (wordCounts WordCounts) PickRandomWordWeighted(choices []randutil.Choice) string {
+	result, err := randutil.WeightedChoice(choices)
+	if err != nil {
+		return ""
+	}
+	return fmt.Sprintf("%v", result.Item)
+}
+
+func (wordCounts WordCounts) PickExpNWordsWeighted(choices []randutil.Choice, n int) string {
+	numberOfWords := randomNumberWithExpMinMax(1, math.MaxInt64, float64(n))
+	words := make([]string, 0)
+	for i := 0; i < numberOfWords; i++ {
+		word := wordCounts.PickRandomWordWeighted(choices)
+		if !contains(words, word) {
+			words = append(words, word)
+		}
+	}
+	return strings.Join(words, " ")
 }

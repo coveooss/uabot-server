@@ -13,6 +13,28 @@ import (
 	"time"
 )
 
+const (
+	MINIMUMTIMETOLIVE int = 1
+	MAXIMUMTIMETOLIVE int = 120
+	DEFAULTIMETOLIVE  int = 2
+
+	MINIMUMNUMBERWORDSPERQUERY int = 1
+	MAXIMUMNUMBERWORDSPERQUERY int = 20
+	DEFAULTNUMBERWORDSPERQUERY int = 2
+
+	MINIMUMDOCUMENTEXPLORATIONPERCENT float64 = 0.001
+	MAXIMUMDOCUMENTEXPLORATIONPERCENT float64 = 1
+	DEFAULTDOCUMENTEXPLORATIONPERCENT float64 = 0.01
+
+	MINIMUMNUMBEROFQUERYPERLANGUAGE int = 1
+	MAXIMUMNUMBEROFQUERYPERLANGUAGE int = 500
+	DEFAULTNUMBEROFQUERYPERLANGUAGE int = 100
+
+	MINIMUMFETCHNUMBEROFRESULTS int = 1
+	MAXIMUMFETCHNUMBEROFRESULTS int = 1000
+	DEFAULTFETCHNUMBEROFRESULTS int = 100
+)
+
 var (
 	quitChannels map[uuid.UUID]chan bool
 	random       *rand.Rand
@@ -36,9 +58,17 @@ func Start(writter http.ResponseWriter, request *http.Request) {
 
 	err = validateConfig(config)
 	if err != nil {
+		scenariolib.Error.Print(err.Error())
 		http.Error(writter, err.Error(), http.StatusBadRequest)
 		return
 	}
+	//Format the Config into a JSON for display purpose
+	out, err := json.MarshalIndent(config, "", "	")
+	if err != nil {
+		http.Error(writter, err.Error(), http.StatusTeapot)
+		return
+	}
+	scenariolib.Info.Println("Current Configuration : \n" + string(out))
 
 	timer := time.NewTimer(time.Duration(config.TimeToLive) * time.Minute)
 	quitChannel := make(chan bool)
@@ -80,29 +110,36 @@ func validateConfig(config *explorerlib.Config) error {
 	if config.AnalyticsToken == "" {
 		return errors.New("analyticsToken Missing")
 	}
-	if config.TimeToLive == 0 {
-		return errors.New("timeToLive Missing")
+	if config.TimeToLive < MINIMUMTIMETOLIVE || config.TimeToLive > MAXIMUMTIMETOLIVE {
+		scenariolib.Warning.Printf("TimeToLive is out of bounds, should be in [%v,%v], will use default value of %v ", MINIMUMTIMETOLIVE, MAXIMUMTIMETOLIVE, DEFAULTIMETOLIVE)
+		config.TimeToLive = DEFAULTIMETOLIVE
 	}
-	if config.AverageNumberOfWordsPerQuery == 0 {
-		config.AverageNumberOfWordsPerQuery = 1
+	if config.AverageNumberOfWordsPerQuery < MINIMUMNUMBERWORDSPERQUERY || config.AverageNumberOfWordsPerQuery > MAXIMUMNUMBERWORDSPERQUERY {
+		scenariolib.Warning.Printf("AverageNumberOfWordsPerQuery is out of bounds, should be in [%v,%v], will use default value of %v ", MINIMUMNUMBERWORDSPERQUERY, MAXIMUMNUMBERWORDSPERQUERY, DEFAULTNUMBERWORDSPERQUERY)
+		config.AverageNumberOfWordsPerQuery = DEFAULTNUMBERWORDSPERQUERY
 	}
-	if config.DocumentsExplorationPercentage == 0 {
-		config.DocumentsExplorationPercentage = 0.01
+	if config.DocumentsExplorationPercentage < MINIMUMDOCUMENTEXPLORATIONPERCENT || config.DocumentsExplorationPercentage > MAXIMUMDOCUMENTEXPLORATIONPERCENT {
+		scenariolib.Warning.Printf("DocumentsExplorationPercentage is out of bounds, should be in [0%,100%], will use default value of %f %%", DEFAULTDOCUMENTEXPLORATIONPERCENT*100)
+		config.DocumentsExplorationPercentage = DEFAULTDOCUMENTEXPLORATIONPERCENT
 	}
-	if config.NumberOfQueryByLanguage == 0 {
-		config.NumberOfQueryByLanguage = 10
+	if config.NumberOfQueryByLanguage < MINIMUMNUMBEROFQUERYPERLANGUAGE || config.NumberOfQueryByLanguage > MAXIMUMNUMBEROFQUERYPERLANGUAGE {
+		scenariolib.Warning.Printf("NumberOfQueryByLanguage is out of bounds, should be in [%v,%v], will use default value of %v ", MINIMUMNUMBEROFQUERYPERLANGUAGE, MAXIMUMNUMBEROFQUERYPERLANGUAGE, DEFAULTNUMBEROFQUERYPERLANGUAGE)
+		config.NumberOfQueryByLanguage = DEFAULTNUMBEROFQUERYPERLANGUAGE
 	}
-	if config.FetchNumberOfResults == 0 {
-		config.FetchNumberOfResults = 1000
+	if config.FetchNumberOfResults < MINIMUMFETCHNUMBEROFRESULTS || config.FetchNumberOfResults > MAXIMUMFETCHNUMBEROFRESULTS {
+		scenariolib.Warning.Printf("FetchNumberOfResults is out of bounds, should be in [%v,%v], will use default value of %v ", MINIMUMFETCHNUMBEROFRESULTS, MAXIMUMFETCHNUMBEROFRESULTS, DEFAULTFETCHNUMBEROFRESULTS)
+		config.FetchNumberOfResults = DEFAULTFETCHNUMBEROFRESULTS
 	}
 	if config.FieldsToExploreEqually == nil || len(config.FieldsToExploreEqually) == 0 {
+		scenariolib.Warning.Printf("FieldsToExploreEqually out of bounds, will be set to default value of @syssource")
 		config.FieldsToExploreEqually = []string{"@syssource"}
 	}
 	if config.OutputFilePath == "" {
+		scenariolib.Warning.Printf("OutputFilePath undefined, will be set to %s.json", config.Id.String())
 		config.OutputFilePath = config.Id.String() + ".json"
 	}
 	if config.Org == "" {
-
+		return errors.New("Org Missing")
 	}
 	return nil
 }

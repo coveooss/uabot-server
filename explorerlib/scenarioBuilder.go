@@ -65,11 +65,11 @@ func NewClickEvent(probability float64) scenariolib.JSONEvent {
 	}
 }
 
-func NewViewEvent() scenariolib.JSONEvent {
+func NewViewEvent(offset int) scenariolib.JSONEvent {
 	return scenariolib.JSONEvent{
 		Type: "View",
 		Arguments: map[string]interface{}{
-			"offset":      0,
+			"offset":      offset,
 			"probability": 1,
 			"docNo":       -1,
 		},
@@ -80,8 +80,8 @@ func NewSetOriginLevels(originLevel1 string, originLevel2 string) scenariolib.JS
 	return scenariolib.JSONEvent{
 		Type: "SetOrigin",
 		Arguments: map[string]interface{}{
-			originLevel1: originLevel1,
-			originLevel2: originLevel2,
+			"originLevel1": originLevel1,
+			"originLevel2": originLevel2,
 		},
 	}
 }
