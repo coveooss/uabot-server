@@ -26,12 +26,6 @@ func (builder *botConfigurationBuilder) WithLanguages(languages []string) *botCo
 	return builder
 }
 
-func (builder *botConfigurationBuilder) AllAnonymous() *botConfigurationBuilder {
-	builder.config.AllowAnonymous = true
-	builder.config.AnonymousThreshold = 1
-	return builder
-}
-
 func (builder *botConfigurationBuilder) WithSearchEndpoint(endpoint string) *botConfigurationBuilder {
 	builder.config.SearchEndpoint = endpoint
 	return builder
