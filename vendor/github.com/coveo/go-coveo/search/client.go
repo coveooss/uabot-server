@@ -29,6 +29,7 @@ type Config struct {
 	UserAgent string
 	// Endpoint is used if you want to use custom endpoints (dev,staging,testing)
 	Endpoint string
+	OrganizationId string
 }
 
 // NewClient returns a configured http search client using default http client
@@ -40,6 +41,7 @@ func NewClient(c Config) (Client, error) {
 	return &client{
 		token:      c.Token,
 		endpoint:   c.Endpoint,
+		organizationId: c.OrganizationId,
 		httpClient: http.DefaultClient,
 		useragent:  c.UserAgent,
 	}, nil
@@ -50,6 +52,7 @@ type client struct {
 	token      string
 	endpoint   string
 	useragent  string
+	organizationId string
 }
 
 func (c *client) Query(q Query) (*Response, error) {
@@ -90,6 +93,7 @@ func (c *client) ListFacetValues(field string, maximumNumberOfValues int) (*Face
 	q := url.Query()
 	q.Set("field", field)
 	q.Set("maximumNumberOfValues", strconv.Itoa(maximumNumberOfValues))
+	q.Set("organizationId", c.organizationId)
 
 	url.RawQuery = q.Encode()
 	url.Path = url.Path + "values"
