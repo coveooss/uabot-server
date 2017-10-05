@@ -147,10 +147,10 @@ func validateConfig(config *explorerlib.Config) error {
 func Stop(writter http.ResponseWriter, request *http.Request) {
 	Vars := mux.Vars(request)
 	id, _ := uuid.FromString(Vars["id"])
-	scenariolib.Info.Printf("Stopping worker")
+	scenariolib.Info.Println("Stopping worker")
 	close(quitChannels[id])
 	delete(quitChannels, id)
-	scenariolib.Info.Printf("Worker stopped")
+	scenariolib.Info.Println("Worker stopped")
 }
 
 func GetInfo(writter http.ResponseWriter, request *http.Request) {
