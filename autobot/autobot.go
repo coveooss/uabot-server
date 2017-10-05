@@ -25,7 +25,7 @@ const (
 
 func (bot *Autobot) Run(quitChannel chan bool) error {
 	scenariolib.Info.Print("Creating Index")
-	index, status := explorerlib.NewIndex(bot.config.SearchEndpoint, bot.config.SearchToken)
+	index, status := explorerlib.NewIndex(bot.config.SearchEndpoint, bot.config.Org, bot.config.SearchToken)
 	scenariolib.Info.Print("Determining Words count per language")
 	wordCountsByLanguage, status := explorerlib.FindWordsByLanguageInIndex(
 		index,

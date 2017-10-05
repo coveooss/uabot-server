@@ -25,9 +25,10 @@ var (
 	throttle          time.Duration
 )
 
-func NewIndex(endpoint string, searchToken string) (Index, error) {
+func NewIndex(endpoint string, organizationId string, searchToken string) (Index, error) {
 	client, err := search.NewClient(search.Config{
 		Endpoint:  endpoint,
+		OrganizationId: organizationId,
 		Token:     searchToken,
 		UserAgent: "",
 	})
