@@ -17,6 +17,7 @@ import (
 var (
 	queueLength    = flag.Int("queue-length", 100, "Length of the queue of workers")
 	port           = flag.String("port", "8080", "Server port")
+	sslport        = flag.String("sslport", "8480", "SSL Server port")
 	routinesPerCPU = flag.Int("routinesPerCPU", 2, "Maximum number of routine per CPU")
 	silent         = flag.Bool("silent", false, "dump the Info prints")
 )
@@ -30,6 +31,11 @@ const (
 	MAXIMUMROUTINEPERCPU int = 5
 	DEFAULTROUTINEPERCPU int = 2
 )
+
+func redirectToHttps(w http.ResponseWriter, r *http.Request) {
+	// Redirect the incoming HTTP request. Note that "127.0.0.1:8081" will only work if you are accessing the server from your local machine.
+	http.Redirect(w, r, "https://"+fmt.Sprintf("%v", r.Host)+fmt.Sprintf(":%v", *sslport)+r.RequestURI, http.StatusMovedPermanently)
+}
 
 func main() {
 	flag.Parse()
@@ -54,7 +60,7 @@ func main() {
 	}
 
 	scenariolib.Info.Printf("Queue Length: %v", *queueLength)
-	scenariolib.Info.Printf("Server Port: %v", *port)
+	scenariolib.Info.Printf("SSL Server Port: %v", fmt.Sprintf(":%v", *sslport))
 	scenariolib.Info.Printf("Routine per CPU: %v", *routinesPerCPU)
 
 	concurrentGoRoutine := *routinesPerCPU * runtime.NumCPU()
@@ -62,6 +68,7 @@ func main() {
 	workPool := server.NewWorkPool(concurrentGoRoutine, int32(*queueLength))
 
 	server.Init(workPool, random)
-	router := server.NewRouter()
-	log.Fatal(http.ListenAndServeTLS(fmt.Sprintf(":%v", *port), "server.crt", "server.key", router))
+	routerHttps := server.NewRouter()
+
+	log.Fatal(http.ListenAndServeTLS(fmt.Sprintf(":%v", *sslport), "server.crt", "server.key", routerHttps))
 }

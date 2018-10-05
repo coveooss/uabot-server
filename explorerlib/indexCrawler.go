@@ -43,6 +43,7 @@ func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorati
 				totalCount, status := index.FindTotalCountFromQuery(search.Query{
 					AQ: "@syslanguage=\"" + language + "\" " + field + "=\"" + value.Value + "\"",
 				})
+				scenariolib.Info.Printf("Get words from query: %v", "@syslanguage=\"" + language + "\" " + field + "=\"" + value.Value + "\"")
 				if status != nil {
 					return nil, status
 				}
@@ -63,6 +64,7 @@ func FindWordsByLanguageInIndex(index Index, fields []string, documentsExplorati
 						" @syslanguage=\"" + language + "\" " +
 						field + "=\"" + value.Value + "\" "
 
+					scenariolib.Info.Printf("Get words count from query: %v", queryExpression)
 					dt3 = time.Since(t3)
 					if dt3 < throttle {
 						time.Sleep(throttle - dt3)

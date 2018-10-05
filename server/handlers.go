@@ -15,7 +15,7 @@ import (
 
 const (
 	MINIMUMTIMETOLIVE int = 1
-	MAXIMUMTIMETOLIVE int = 120
+	MAXIMUMTIMETOLIVE int = 1000
 	DEFAULTIMETOLIVE  int = 2
 
 	MINIMUMNUMBERWORDSPERQUERY int = 1
@@ -74,14 +74,14 @@ func Start(writter http.ResponseWriter, request *http.Request) {
 	quitChannel := make(chan bool)
 	go func() {
 		<-timer.C
-		scenariolib.Info.Printf("Timer Timed Out")
+		scenariolib.Info.Println("Timer Timed Out")
 		close(quitChannel)
 	}()
 	quitChannels[config.Id] = quitChannel
 	worker := NewWorker(config, quitChannel, random, config.Id)
 	err = workPool.PostWork(&worker)
 	if err != nil {
-		scenariolib.Error.Printf("Error : %v\n", err)
+		scenariolib.Error.Println("Error : %v\n", err)
 	}
 	json.NewEncoder(writter).Encode(map[string]interface{}{
 		"workerID": config.Id,
@@ -111,31 +111,31 @@ func validateConfig(config *explorerlib.Config) error {
 		return errors.New("analyticsToken Missing")
 	}
 	if config.TimeToLive < MINIMUMTIMETOLIVE || config.TimeToLive > MAXIMUMTIMETOLIVE {
-		scenariolib.Warning.Printf("TimeToLive is out of bounds, should be in [%v,%v], will use default value of %v ", MINIMUMTIMETOLIVE, MAXIMUMTIMETOLIVE, DEFAULTIMETOLIVE)
+		scenariolib.Warning.Println("TimeToLive is out of bounds, should be in [%v,%v], will use default value of %v ", MINIMUMTIMETOLIVE, MAXIMUMTIMETOLIVE, DEFAULTIMETOLIVE)
 		config.TimeToLive = DEFAULTIMETOLIVE
 	}
 	if config.AverageNumberOfWordsPerQuery < MINIMUMNUMBERWORDSPERQUERY || config.AverageNumberOfWordsPerQuery > MAXIMUMNUMBERWORDSPERQUERY {
-		scenariolib.Warning.Printf("AverageNumberOfWordsPerQuery is out of bounds, should be in [%v,%v], will use default value of %v ", MINIMUMNUMBERWORDSPERQUERY, MAXIMUMNUMBERWORDSPERQUERY, DEFAULTNUMBERWORDSPERQUERY)
+		scenariolib.Warning.Println("AverageNumberOfWordsPerQuery is out of bounds, should be in [%v,%v], will use default value of %v ", MINIMUMNUMBERWORDSPERQUERY, MAXIMUMNUMBERWORDSPERQUERY, DEFAULTNUMBERWORDSPERQUERY)
 		config.AverageNumberOfWordsPerQuery = DEFAULTNUMBERWORDSPERQUERY
 	}
 	if config.DocumentsExplorationPercentage < MINIMUMDOCUMENTEXPLORATIONPERCENT || config.DocumentsExplorationPercentage > MAXIMUMDOCUMENTEXPLORATIONPERCENT {
-		scenariolib.Warning.Printf("DocumentsExplorationPercentage is out of bounds, should be in [0%,100%], will use default value of %f %%", DEFAULTDOCUMENTEXPLORATIONPERCENT*100)
+		scenariolib.Warning.Println("DocumentsExplorationPercentage is out of bounds, should be in [0%,100%], will use default value of %f %%", DEFAULTDOCUMENTEXPLORATIONPERCENT*100)
 		config.DocumentsExplorationPercentage = DEFAULTDOCUMENTEXPLORATIONPERCENT
 	}
 	if config.NumberOfQueryByLanguage < MINIMUMNUMBEROFQUERYPERLANGUAGE || config.NumberOfQueryByLanguage > MAXIMUMNUMBEROFQUERYPERLANGUAGE {
-		scenariolib.Warning.Printf("NumberOfQueryByLanguage is out of bounds, should be in [%v,%v], will use default value of %v ", MINIMUMNUMBEROFQUERYPERLANGUAGE, MAXIMUMNUMBEROFQUERYPERLANGUAGE, DEFAULTNUMBEROFQUERYPERLANGUAGE)
+		scenariolib.Warning.Println("NumberOfQueryByLanguage is out of bounds, should be in [%v,%v], will use default value of %v ", MINIMUMNUMBEROFQUERYPERLANGUAGE, MAXIMUMNUMBEROFQUERYPERLANGUAGE, DEFAULTNUMBEROFQUERYPERLANGUAGE)
 		config.NumberOfQueryByLanguage = DEFAULTNUMBEROFQUERYPERLANGUAGE
 	}
 	if config.FetchNumberOfResults < MINIMUMFETCHNUMBEROFRESULTS || config.FetchNumberOfResults > MAXIMUMFETCHNUMBEROFRESULTS {
-		scenariolib.Warning.Printf("FetchNumberOfResults is out of bounds, should be in [%v,%v], will use default value of %v ", MINIMUMFETCHNUMBEROFRESULTS, MAXIMUMFETCHNUMBEROFRESULTS, DEFAULTFETCHNUMBEROFRESULTS)
+		scenariolib.Warning.Println("FetchNumberOfResults is out of bounds, should be in [%v,%v], will use default value of %v ", MINIMUMFETCHNUMBEROFRESULTS, MAXIMUMFETCHNUMBEROFRESULTS, DEFAULTFETCHNUMBEROFRESULTS)
 		config.FetchNumberOfResults = DEFAULTFETCHNUMBEROFRESULTS
 	}
 	if config.FieldsToExploreEqually == nil || len(config.FieldsToExploreEqually) == 0 {
-		scenariolib.Warning.Printf("FieldsToExploreEqually out of bounds, will be set to default value of @syssource")
+		scenariolib.Warning.Println("FieldsToExploreEqually out of bounds, will be set to default value of @syssource")
 		config.FieldsToExploreEqually = []string{"@syssource"}
 	}
 	if config.OutputFilePath == "" {
-		scenariolib.Warning.Printf("OutputFilePath undefined, will be set to %s.json", config.Id.String())
+		scenariolib.Warning.Println("OutputFilePath undefined, will be set to %s.json", config.Id.String())
 		config.OutputFilePath = config.Id.String() + ".json"
 	}
 	if config.Org == "" {
@@ -147,8 +147,10 @@ func validateConfig(config *explorerlib.Config) error {
 func Stop(writter http.ResponseWriter, request *http.Request) {
 	Vars := mux.Vars(request)
 	id, _ := uuid.FromString(Vars["id"])
+	scenariolib.Info.Println("Stopping worker")
 	close(quitChannels[id])
 	delete(quitChannels, id)
+	scenariolib.Info.Println("Worker stopped")
 }
 
 func GetInfo(writter http.ResponseWriter, request *http.Request) {
